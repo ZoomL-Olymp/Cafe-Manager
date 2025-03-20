@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список заказов</title>
+</head>
+<body>
+    <h1>Список заказов</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Номер стола</th>
+                <th>Список блюд</th>
+                <th>Общая стоимость</th>
+                <th>Статус</th>
+                <th>Изменить статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.table_number }}</td>
+                    <td>
+                        <ul>
+                            {% for item in order.items %}
+                                <li>{{ item.name }} - {{ item.price }} руб.</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ order.total_price }} руб.</td>
+                    <td>{{ order.status }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'order_update_status' order.id %}">
+                            {% csrf_token %}
+                            <select name="status">
+                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>В ожидании</option>
+                                <option value="ready" {% if order.status == 'ready' %}selected{% endif %}>Готово</option>
+                                <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>Оплачено</option>
+                            </select>
+                            <button type="submit">Изменить статус</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="{% url 'order_create' %}">Добавить новый заказ</a>
+</body>
+</html>
