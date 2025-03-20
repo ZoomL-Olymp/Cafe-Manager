@@ -44,6 +44,7 @@
         {% endfor %}
     </tbody>
 </table>
-<a href="{% url 'daily_revenue' %}" class="btn btn-success">Показать выручку</a>
+<h3>Выручка за смену</h2>
+<p class="fs-4">Общая сумма оплаченных заказов: <strong>{{ revenue }} ₽</strong></p>
 <a href="{% url 'order_create' %}" class="btn btn-success">Добавить заказ</a>
 {% endblock %}

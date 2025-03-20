@@ -21,7 +21,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 def order_list(request):
     orders = Order.objects.all()
-    return render(request, 'orders/orders_list.html', {'orders': orders})
+    revenue = Order.objects.filter(status='paid').aggregate(total=Sum('total_price'))['total'] or 0
+    return render(request, 'orders/orders_list.html', {'orders': orders, 'revenue': revenue})
 
 def order_create(request):
     if request.method == 'POST':
