@@ -6,7 +6,7 @@
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone <repo_url>
+   git clone https://github.com/ZoomL-Olymp/Cafe-Manager.git
    cd cafe
    ```
 2. Установите зависимости:
