@@ -1,8 +1,9 @@
 from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from .models import Order
+from .forms import OrderUpdateForm
 from .serializers import OrderSerializer
 from decimal import Decimal
 import json
@@ -38,19 +39,25 @@ def order_create(request):
     
     return render(request, 'orders/order_form.html')
 
-def order_update_status(request, order_id):
-    try:
-        order = Order.objects.get(id=order_id)
-    except Order.DoesNotExist:
-        raise Http404("Заказ не найден.")
+def order_update(request, pk):
+    order = get_object_or_404(Order, pk=pk)
     
     if request.method == 'POST':
-        new_status = request.POST.get('status')
-        order.status = new_status
-        order.save()
+        form = OrderUpdateForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            return redirect('orders_list')
+    else:
+        form = OrderUpdateForm(instance=order)  # Загружаем текущие данные
+
+    return render(request, 'orders/order_edit.html', {'form': form, 'order': order})
+
+def order_delete(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    if request.method == 'POST':
+        order.delete()
         return redirect('orders_list')
-    
-    return redirect('orders_list')
+    return render(request, 'orders/order_confirm_delete.html', {'order': order})
 
 def parse_items(items_input):
     """Парсит строку ввода в список блюд с ценами, преобразует цену в строку"""
