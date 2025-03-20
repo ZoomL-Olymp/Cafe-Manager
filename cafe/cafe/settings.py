@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'drf_spectacular',
+    'widget_tweaks',
 ]
 
 REST_FRAMEWORK = {

@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from django.db.models import Sum
 from .models import Order
-from .forms import OrderUpdateForm
+from .forms import OrderUpdateForm, OrderFilterForm
 from .serializers import OrderSerializer
 from decimal import Decimal
 import json
@@ -22,7 +22,24 @@ class OrderViewSet(viewsets.ModelViewSet):
 def order_list(request):
     orders = Order.objects.all()
     revenue = Order.objects.filter(status='paid').aggregate(total=Sum('total_price'))['total'] or 0
-    return render(request, 'orders/orders_list.html', {'orders': orders, 'revenue': revenue})
+    form = OrderFilterForm(request.GET)
+
+    if form.is_valid():
+        status = form.cleaned_data.get('status')
+        table_number = form.cleaned_data.get('table_number')
+        search = form.cleaned_data.get('search')
+        ordering = form.cleaned_data.get('ordering')
+
+        if status:
+            orders = orders.filter(status=status)
+        if table_number:
+            orders = orders.filter(table_number=table_number)
+        if search:
+            orders = orders.filter(Q(items__contains=search))
+        if ordering:
+            orders = orders.order_by(ordering)
+
+    return render(request, 'orders/orders_list.html', {'orders': orders, 'revenue': revenue, 'form': form})
 
 def order_create(request):
     if request.method == 'POST':
