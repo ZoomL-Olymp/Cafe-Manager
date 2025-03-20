@@ -23,3 +23,7 @@ urlpatterns += [
     path('<int:pk>/edit/', views.order_update, name='order_edit'), 
     path('<int:pk>/delete/', views.order_delete, name='order_delete'),
 ]
+
+urlpatterns += [
+    path('revenue/', views.daily_revenue, name='daily_revenue'),
+]

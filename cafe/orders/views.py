@@ -2,6 +2,7 @@ from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
+from django.db.models import Sum
 from .models import Order
 from .forms import OrderUpdateForm
 from .serializers import OrderSerializer
@@ -66,3 +67,8 @@ def parse_items(items_input):
         name, price = item_str.strip().split(' ')
         items.append({'name': name, 'price': str(Decimal(price))})  # Преобразование в строку
     return items
+
+def daily_revenue(request):
+    revenue = Order.objects.filter(status='paid').aggregate(total=Sum('total_price'))['total'] or 0
+
+    return render(request, 'orders/revenue.html', {'revenue': revenue})
